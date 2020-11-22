@@ -12,7 +12,7 @@ resource "aws_vpc" "network" {
 # Subnets : public
 resource "aws_subnet" "public" {
   count = length(var.azs)
-  vpc_id = aws_vpc.webgl.id
+  vpc_id = aws_vpc.network.id
   cidr_block = cidrsubnet("${var.vpc_cidr_prefix}.0.0/16", var.cidr_bytes,count.index)
   availability_zone = "${var.aws_region}${element(var.azs,count.index)}"
   map_public_ip_on_launch = true
@@ -22,20 +22,20 @@ resource "aws_subnet" "public" {
 }
 
 resource "aws_internet_gateway" "network_igw" {
-    vpc_id = aws_vpc.webgl.id
+    vpc_id = aws_vpc.network.id
     tags = {
         Name = "${var.project_name}-igw"
     }
 }
 
 resource "aws_route_table" "network_rtb" {
-    vpc_id = aws_vpc.webgl.id
+    vpc_id = aws_vpc.network.id
     
     route {
         //associated subnet can reach everywhere
         cidr_block = "0.0.0.0/0" 
         //CRT uses this IGW to reach internet
-        gateway_id = aws_internet_gateway.webgl_igw.id
+        gateway_id = aws_internet_gateway.network_igw.id
     }
     
     tags = {
@@ -47,11 +47,11 @@ resource "aws_route_table" "network_rtb" {
 resource "aws_route_table_association" "rtb_asc" {
   count = length(aws_subnet.public)
   subnet_id      = element(aws_subnet.public.*.id,count.index)
-  route_table_id = aws_route_table.webgl_rtb.id
+  route_table_id = aws_route_table.network_rtb.id
 }
 
 resource "aws_security_group" "project_network" {
-    vpc_id = aws_vpc.webgl.id
+    vpc_id = aws_vpc.network.id
     name   = "${var.project_name}-default-sg"
     
     egress {
@@ -72,7 +72,7 @@ resource "aws_security_group" "project_network" {
         Name = "${var.project_name}-ssh-enabled"
     }
 
-    depends_on = [aws_vpc.webgl]
+    depends_on = [aws_vpc.network]
 
     dynamic "ingress" {
         for_each = [for ing in var.sg_ingress_networks:{
