@@ -1,5 +1,5 @@
 resource "aws_vpc" "network" {
-    cidr_block = "${var.vpc_cidr_prefix}.0.0/16"
+    cidr_block = var.vpc_cidr
     enable_dns_support = true #gives you an internal domain name
     enable_dns_hostnames = true #gives you an internal host name
     enable_classiclink = false
@@ -13,7 +13,7 @@ resource "aws_vpc" "network" {
 resource "aws_subnet" "public" {
   count = length(var.azs)
   vpc_id = aws_vpc.network.id
-  cidr_block = cidrsubnet("${var.vpc_cidr_prefix}.0.0/16", var.cidr_bytes,count.index)
+  cidr_block = cidrsubnet(var.vpc_cidr, var.cidr_bytes,count.index)
   availability_zone = "${var.aws_region}${element(var.azs,count.index)}"
   map_public_ip_on_launch = true
   tags = {

@@ -1,6 +1,6 @@
-variable "vpc_cidr_prefix" {
+variable "vpc_cidr" {
    type = string
-   description = "Prefix of vole cidr block for created VPC"
+   description = "Cidr block for created VPC"
 }
 
 variable "project_name" {
