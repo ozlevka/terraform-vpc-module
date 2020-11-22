@@ -13,3 +13,7 @@ output "vpc_id" {
 output "sg_id" {
     value = aws_security_group.project_network.id
 }
+
+output "rt_id" {
+    value = aws_route_table.network_rtb.id
+}
