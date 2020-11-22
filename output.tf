@@ -7,9 +7,9 @@ output "subnets" {
 }
 
 output "vpc_id" {
-    value = aws_vpc.webgl.id
+    value = aws_vpc.network.id
 }
 
 output "sg_id" {
-    value = aws_security_group.project_webgl.id
+    value = aws_security_group.project_network.id
 }

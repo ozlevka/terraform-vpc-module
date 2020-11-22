@@ -1,4 +1,4 @@
-resource "aws_vpc" "webgl" {
+resource "aws_vpc" "network" {
     cidr_block = "${var.vpc_cidr_prefix}.0.0/16"
     enable_dns_support = true #gives you an internal domain name
     enable_dns_hostnames = true #gives you an internal host name
@@ -21,14 +21,14 @@ resource "aws_subnet" "public" {
   }
 }
 
-resource "aws_internet_gateway" "webgl_igw" {
+resource "aws_internet_gateway" "network_igw" {
     vpc_id = aws_vpc.webgl.id
     tags = {
         Name = "${var.project_name}-igw"
     }
 }
 
-resource "aws_route_table" "webgl_rtb" {
+resource "aws_route_table" "network_rtb" {
     vpc_id = aws_vpc.webgl.id
     
     route {
@@ -50,7 +50,7 @@ resource "aws_route_table_association" "rtb_asc" {
   route_table_id = aws_route_table.webgl_rtb.id
 }
 
-resource "aws_security_group" "project_webgl" {
+resource "aws_security_group" "project_network" {
     vpc_id = aws_vpc.webgl.id
     name   = "${var.project_name}-default-sg"
     
