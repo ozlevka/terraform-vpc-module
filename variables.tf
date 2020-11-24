@@ -35,3 +35,42 @@ variable "sg_ingress_networks" {
    default       = []
    description   = "List of ingress networks definitions for default security group" 
 }
+
+variable "enable_peering" {
+  type        = bool
+  default     = false
+  description = "Enable or disable peering with another VPC"
+}
+
+variable "peering_region" {
+  type        = string
+  description = "AWS region when peering VPC placed"
+  default     = null
+}
+
+variable "peering_vpc_id" {
+  type        = string
+  description = "VPC id when current peering connection will be connected"
+  default     = null
+}
+
+variable "peering_rtb_id" {
+  type        = string
+  description = "Routing table id when peering will be created"
+  default     = null
+}
+
+variable "peering_sg_id" {
+  type        = string
+  description = "Security group that apply access in peering VPC"
+  default     = null
+}
+
+variable "route53_zone_id" {
+  type        = string
+  description = "description"
+  default     = null
+}
+
+
+
