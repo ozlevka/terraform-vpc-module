@@ -13,6 +13,7 @@ module "ww-vpc" {
     sg_ingress_networks = var.sg_ingress
 }
 ```
+Also check [test file](https://github.com/windward-ltd/ww-terraform-vpc-module/blob/036a1d8edc90d57b0d55c01af9daba9a7cd4a3fe/test/main.tf#L6-L27) for example how to enable VPC to VPC peering connection.
 
 * source => github url. You need ssh-client installed. Then use ```ssh-add [path to github key]```
 * aws_region => AWS region when VPC will be installed
