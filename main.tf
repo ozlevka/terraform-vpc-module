@@ -45,7 +45,7 @@ resource "aws_route_table" "network_rtb" {
 
 resource "aws_route" "main_route" {
     //associated subnet can reach everywhere
-    cidr_block     = "0.0.0.0/0" 
+    destination_cidr_block     = "0.0.0.0/0" 
     //CRT uses this IGW to reach internet
     gateway_id     = aws_internet_gateway.network_igw.id
     route_table_id = aws_route_table.network_rtb.id
