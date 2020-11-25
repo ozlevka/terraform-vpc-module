@@ -53,45 +53,80 @@ resource "aws_route_table_association" "rtb_asc" {
 resource "aws_security_group" "project_network" {
     vpc_id = aws_vpc.network.id
     name   = "${var.project_name}-default-sg"
-    
-    egress {
-        from_port = 0
-        to_port = 0
-        protocol = -1
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
-    ingress {
-        from_port = 0
-        to_port   = 0
-        protocol  = -1
-        self      = true
-    }
-
-    tags = {
-        Name = "${var.project_name}-ssh-enabled"
-    }
-
-    depends_on = [aws_vpc.network]
-
-    dynamic "ingress" {
-        for_each = [for ing in var.sg_ingress_networks:{
-            from_port   = ing.from_port
-            to_port     = ing.to_port
-            protocol    = ing.protocol
-            description = ing.description
-            cidr_blocks = ing.cidr_blocks
-        }]
-
-        content {
-            from_port   = ingress.value.from_port
-            to_port     = ingress.value.to_port
-            protocol    = ingress.value.protocol
-            description = ingress.value.description
-            cidr_blocks = ingress.value.cidr_blocks
-        }
-    }
 }
+
+resource "aws_security_group_rule" "self_ingress_sg_rule" {
+  type              = "ingress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = -1
+  self              = true
+  security_group_id = aws_security_group.project_network.id
+}
+
+resource "aws_security_group_rule" "egress_sg_rule" {
+    type      = "egress"
+    from_port = 0
+    to_port = 0
+    protocol = -1
+    cidr_blocks = ["0.0.0.0/0"]
+    security_group_id = aws_security_group.project_network.id
+}
+
+resource "aws_security_group_rule" "common_ingress_sg_rule" {
+    count    = length(var.sg_ingress_networks)
+    type     = "ingress"
+    from_port   = var.sg_ingress_networks[count.index].from_port
+    to_port     = var.sg_ingress_networks[count.index].to_port
+    protocol    = var.sg_ingress_networks[count.index].protocol
+    description = var.sg_ingress_networks[count.index].description
+    cidr_blocks = var.sg_ingress_networks[count.index].cidr_blocks
+    security_group_id = aws_security_group.project_network.id
+}
+
+
+# resource "aws_security_group" "project_network" {
+#     vpc_id = aws_vpc.network.id
+#     name   = "${var.project_name}-default-sg"
+    
+#     egress {
+#         from_port = 0
+#         to_port = 0
+#         protocol = -1
+#         cidr_blocks = ["0.0.0.0/0"]
+#     }
+
+#     ingress {
+#         from_port = 0
+#         to_port   = 0
+#         protocol  = -1
+#         self      = true
+#     }
+
+#     tags = {
+#         Name = "${var.project_name}-ssh-enabled"
+#     }
+
+#     depends_on = [aws_vpc.network]
+
+#     dynamic "ingress" {
+#         for_each = [for ing in var.sg_ingress_networks:{
+#             from_port   = ing.from_port
+#             to_port     = ing.to_port
+#             protocol    = ing.protocol
+#             description = ing.description
+#             cidr_blocks = ing.cidr_blocks
+#         }]
+
+#         content {
+#             from_port   = ingress.value.from_port
+#             to_port     = ingress.value.to_port
+#             protocol    = ingress.value.protocol
+#             description = ingress.value.description
+#             cidr_blocks = ingress.value.cidr_blocks
+#         }
+#     }
+# }
 
 
 
