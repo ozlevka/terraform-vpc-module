@@ -31,17 +31,27 @@ resource "aws_internet_gateway" "network_igw" {
 resource "aws_route_table" "network_rtb" {
     vpc_id = aws_vpc.network.id
     
-    route {
-        //associated subnet can reach everywhere
-        cidr_block = "0.0.0.0/0" 
-        //CRT uses this IGW to reach internet
-        gateway_id = aws_internet_gateway.network_igw.id
-    }
+    # route {
+    #     //associated subnet can reach everywhere
+    #     cidr_block = "0.0.0.0/0" 
+    #     //CRT uses this IGW to reach internet
+    #     gateway_id = aws_internet_gateway.network_igw.id
+    # }
     
     tags = {
         Name = "${var.project_name}_rtb"
     }
 }
+
+resource "aws_route" "main_route" {
+    //associated subnet can reach everywhere
+    cidr_block     = "0.0.0.0/0" 
+    //CRT uses this IGW to reach internet
+    gateway_id     = aws_internet_gateway.network_igw.id
+    route_table_id = aws_route_table.network_rtb.id
+}
+
+
 
 # Route table association with public subnets
 resource "aws_route_table_association" "rtb_asc" {
