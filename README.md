@@ -13,6 +13,26 @@ module "ww-vpc" {
     sg_ingress_networks = var.sg_ingress
 }
 ```
+
+For usage when peering will be enabled add next arguments:
+
+```HCL
+module "ww-vpc" {
+    source              = "git@github.com:windward-ltd/ww-terraform-vpc-module.git"
+    aws_region          = "us-east-1"
+    project_name        = "vpc-module-test"
+    azs                 = ["a","b","c","d","f"] 
+    vpc_cidr            = "172.25.0.0/16"
+    cidr_bytes          = 8 
+    sg_ingress_networks = var.sg_ingress
+    enable_peering      = true
+    peering_vpc_id      = "VPC id to peering with"
+    peering_rtb_id      = "ROUTING table id for add route"
+    peering_sg_id       = "security group ID in peering VPC for add rule with VPC cidr"
+    route53_zone_id     = "[ZONE 53 id for register new created VPC]"
+}
+```
+
 Also check [test file](https://github.com/windward-ltd/ww-terraform-vpc-module/blob/036a1d8edc90d57b0d55c01af9daba9a7cd4a3fe/test/main.tf#L6-L27) for example how to enable VPC to VPC peering connection.
 
 * source => github url. You need ssh-client installed. Then use ```ssh-add [path to github key]```
